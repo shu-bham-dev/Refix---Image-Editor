@@ -1,111 +1,320 @@
 import React, { useState } from "react"
+import ReactCrop from "react-image-crop"
+import "react-image-crop/dist/ReactCrop.css"
+// Icons
+import { BsFillBrightnessHighFill } from "react-icons/bs"
+import { BsFillRecordCircleFill } from "react-icons/bs"
+import { BsImageAlt } from "react-icons/bs"
+import { IoContrastSharp } from "react-icons/io5"
 
 function Home() {
+  const [image, setImage] = useState("")
+  const [details, setDetails] = useState("")
+  const [crop, setCrop] = useState("")
   const [settings, setSettings] = useState({
-    brightness: "50",
-    contrast: "30",
-    saturation: "40",
-    vibrance: "100",
+    brightness: "100",
+    contrast: "100",
+    saturation: "100",
+    sepia: "0",
+    rotate: 0,
+    vertical: 1,
+    horizontal: 1,
   })
 
-  const changeFilter = (e) => {
-    console.log(e.target.id, e.target.value)
-    if (e.target.id === "brightness") {
-      console.log("bright");
-      setSettings({
-        brightness: e.target.value,
-      })
-    } else if (e.target.id === "contrast") {
-      console.log("con");
-      setSettings({
-        contrast: e.target.value,
-      })
-    } else if (e.target.id === "saturation") {
-      setSettings({
-        saturation: e.target.value,
-      })
-    } else {
-      setSettings({
-        vibrance: e.target.value,
-      })
+  const saveImage = () => {
+    const canvas = document.createElement("canvas")
+    canvas.width = details.naturalHeight
+    canvas.height = details.naturalHeight
+    const ctx = canvas.getContext("2d")
+
+    ctx.filter = `brightness(${settings.brightness}%) saturate(${settings.saturation}%) sepia(${settings.sepia}) contrast(${settings.contrast}%)`
+    ctx.translate(canvas.width / 2, canvas.height / 2)
+    ctx.rotate(settings.rotate * Math.PI / 180)
+    ctx.scale(settings.vertical, settings.horizontal)
+
+    ctx.drawImage(
+      details,
+      -canvas.width / 2,
+      -canvas.height / 2,
+      canvas.width,
+      canvas.height
+    )
+
+    const link = document.createElement("a")
+    link.download = "image_edit.jpg"
+    link.href = canvas.toDataURL()
+    console.log(link.href)
+    link.click()
+  }
+  const imageHandle = (e) => {
+    if (e.target.files.length !== 0) {
+      const reader = new FileReader()
+      reader.onload = () => {
+        setImage(reader.result)
+      }
+      reader.readAsDataURL(e.target.files[0])
     }
+  }
+  const changeFilter = (e) => {
+    if (e.target.id === "brightness") {
+      setSettings({ ...settings, brightness: e.target.value })
+    } else if (e.target.id === "contrast") {
+      setSettings({ ...settings, contrast: e.target.value })
+    } else if (e.target.id === "saturation") {
+      setSettings({ ...settings, saturation: e.target.value })
+    } else if(e.target.id === "sepia") {
+      setSettings({ ...settings, sepia: e.target.value })
+    } else {
+      setSettings({ ...settings, vibrance: e.target.value })
+    }
+  }
+  const imageCrop = () => {
+    const canvas = document.createElement("canvas")
+    const scaleX = details.naturalWidth / details.width
+    const scaleY = details.naturalHeight / details.height
+    canvas.width = crop.width
+    canvas.height = crop.height
+    const ctx = canvas.getContext("2d")
+
+    ctx.drawImage(
+      details,
+      crop.x * scaleX,
+      crop.y * scaleY,
+      crop.width * scaleX,
+      crop.height * scaleY,
+      0,
+      0,
+      crop.width,
+      crop.height
+    )
+
+    const croppedImage = canvas.toDataURL("image/jpg")
+    setImage(croppedImage)
+  }
+  const resetFilter = () => {
+    setSettings({
+      brightness: "100",
+      contrast: "100",
+      saturation: "100",
+      sepia: "0",
+    })
+  }
+
+  const leftRotate = () => {
+    console.log(settings);
+    setSettings({
+      ...settings,
+      rotate: settings.rotate - 90,
+    })
+  }
+
+  const rightRotate = () => {
+    console.log(settings);
+    setSettings({
+      ...settings,
+      rotate: settings.rotate + 90,
+    })
+  }
+  const verticalFlip = () => {
+    console.log(settings);
+    setSettings({
+      ...settings,
+      vertical: settings.vertical === 1 ? -1 : 1,
+    })
+  }
+
+  const horizontalFlip = () => {
+    console.log(settings);
+    setSettings({
+      ...settings,
+      horizontal: settings.horizontal === 1 ? -1 : 1,
+    })
   }
 
   return (
-    <div className="flex items-center justify-center h-3/4 w-4/5 bg-blue-400">
-      <div>
-        {/* Image Selector */}
-        <input type="file"></input>
-        {/* Canvas */}
-        <canvas></canvas>
-        {/* Filters */}
-        <div className="bg-red-200 mt-4 rounded-md p-2">
-          <label
-            for="default-range"
-            className="block text-start mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
-            Brightness
-          </label>
-          <input
-            id="brightness"
-            type="range"
-            value={settings.brightness}
-            onChange={changeFilter}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
-          ></input>
-          <label
-            for="default-range"
-            className="block text-start mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
-            Contrast
-          </label>
-          <input
-            id="contrast"
-            type="range"
-            value={settings.contrast}
-            onChange={changeFilter}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
-          ></input>
-          <label
-            for="default-range"
-            className="block text-start mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
-            Saturation
-          </label>
-          <input
-            id="saturation"
-            type="range"
-            value={settings.saturation}
-            onChange={changeFilter}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
-          ></input>
-          <label
-            for="default-range"
-            className="block text-start mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
-            Vibrance
-          </label>
-          <input
-            id="vibrance"
-            type="range"
-            onChange={changeFilter}
-            value={settings.vibrance}
-            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
-          ></input>
+    <div>
+      {/* <div className="inline mt-40">Refix.io</div> */}
+      <div className="flex items-center justify-evenly h-screen bg-bgColor">
+        <div id="myCanvas" className="border border-black h-96 w-96">
+          {/* <canvas ref={canvasRef} /> */}
+          <ReactCrop crop={crop} onChange={(c) => setCrop(c)}>
+            <img
+              onLoad={(e) => setDetails(e.currentTarget)}
+              style={{
+                filter: `brightness(${settings.brightness}%) saturate(${settings.saturation}%) contrast(${settings.contrast}% sepia(${settings.sepia})`,
+                transform: `rotate(${settings.rotate}deg) scale(${settings.vertical},${settings.horizontal})`,
+              }}
+              src={image}
+              alt="Please select an IMG"
+            />
+          </ReactCrop>
         </div>
-        <div className="flex flex-row justify-around mb-2 bg-red-200 mt-4 rounded-md p-4 text-start">
-          <button className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-1 border border-gray-400 rounded shadow">
-            Vintage
-          </button>
-          <button className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-1 border border-gray-400 rounded shadow">
-            Lomo
-          </button>
-          <button className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-1 border border-gray-400 rounded shadow">
-            Clarity
-          </button>
-          <button className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-1 px-1 border border-gray-400 rounded shadow">
-            Sin City
-          </button>
+        <div className="shadow-shadowBG rounded w-5/12">
+          <div className="p-8">
+            {/* Image Selector */}
+            <label
+              className="block mb-2 text-start text-textColor text-base font-medium dark:text-white"
+              htmlFor="file_input"
+            >
+              Upload Image
+            </label>
+            <input
+              className="block rounded mb-2 text-textColor cursor-pointer focus:outline-none
+            w-fit"
+              type="file"
+              onChange={imageHandle}
+            ></input>
+            <p className="mb-2 text-sm text-textColor text-start" id="file_input_help">
+              *SVG, PNG, JPG or GIF.
+            </p>
+          </div>
+          {/* Filters */}
+          <div className="rounded-md p-8">
+            <div className="flex">
+              <BsFillBrightnessHighFill color="white" size="20px" />
+              <label
+                htmlFor="default-range"
+                className="text-textColor block text-start mb-2 ml-1.5 text-sm font-medium"
+              >
+                Brightness
+                <div className="bg-white font-bold inline ml-4">
+                  {settings.brightness}%
+                </div>
+                <button
+                  className="ml-64 shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded"
+                  onClick={resetFilter}
+                >
+                  Reset
+                </button>
+              </label>
+            </div>
+            <input
+              id="brightness"
+              type="range"
+              min="0"
+              max="200"
+              value={settings.brightness}
+              onChange={changeFilter}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+            ></input>
+            <div className="flex">
+              <IoContrastSharp color="white" size="20px" />
+              <label
+                htmlFor="default-range"
+                className="text-textColor block text-start mb-2 ml-1.5 text-sm font-medium"
+              >
+                Contrast
+                <div className="bg-white font-bold inline ml-4">
+                  {settings.contrast}%
+                </div>
+              </label>
+            </div>
+            <input
+              id="contrast"
+              type="range"
+              min="0"
+              max="200"
+              value={settings.contrast}
+              onChange={changeFilter}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+            ></input>
+            <div className="flex">
+              <BsFillRecordCircleFill color="white" size="20px" />
+              <label
+                htmlFor="default-range"
+                className="text-textColor block text-start mb-2 ml-1.5 text-sm font-medium"
+              >
+                Saturation
+                <div className="bg-white font-bold inline ml-4">
+                  {settings.saturation}%
+                </div>
+              </label>
+            </div>
+            <input
+              id="saturation"
+              type="range"
+              min="0"
+              max="200"
+              value={settings.saturation}
+              onChange={changeFilter}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+            ></input>
+            <div className="flex">
+              <BsImageAlt color="white" size="20px" />
+              <label
+                htmlFor="default-range"
+                className="text-textColor block text-start mb-2 ml-1.5 text-sm font-medium"
+              >
+                Sepia
+                <div className="bg-white font-bold inline ml-4">
+                  {settings.sepia}%
+                </div>
+              </label>
+            </div>
+            <input
+              id="sepia"
+              type="range"
+              min="0"
+              max="200"
+              onChange={changeFilter}
+              value={settings.vibrance}
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+            ></input>
+          </div>
+          <div className="flex flex-row justify-around mb-2 mt-4 rounded-md p-4">
+            <div className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded">
+              Vintage
+            </div>
+            <button className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded">
+              Lomo
+            </button>
+            <button className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded">
+              Clarity
+            </button>
+            <button className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded">
+              Sin City
+            </button>
+          </div>
+          <div className="flex flex-row justify-around mb-2 mt-4 rounded-md p-4">
+            {crop && (
+              <button
+                className="crop shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded"
+                onClick={imageCrop}
+              >
+                Crop Image
+              </button>
+            )}
+            <button
+              className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded"
+              onClick={saveImage}
+            >
+              Download Image
+            </button>
+            <button
+              className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded"
+              onClick={leftRotate}
+            >
+              Rotate Left
+            </button>
+            <button
+              className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded"
+              onClick={rightRotate}
+            >
+              Rotate Right
+            </button>
+            <button
+              className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded"
+              onClick={horizontalFlip}
+            >
+              horizontalFlip
+            </button>
+            <button
+              className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded"
+              onClick={verticalFlip}
+            >
+              verticalFlip
+            </button>
+          </div>
         </div>
       </div>
     </div>
