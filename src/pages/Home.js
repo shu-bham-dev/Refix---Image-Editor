@@ -15,7 +15,7 @@ function Home() {
     brightness: "100",
     contrast: "100",
     saturation: "100",
-    sepia: "0",
+    grayscale: "0",
     rotate: 0,
     vertical: 1,
     horizontal: 1,
@@ -27,7 +27,7 @@ function Home() {
     canvas.height = details.naturalHeight
     const ctx = canvas.getContext("2d")
 
-    ctx.filter = `brightness(${settings.brightness}%) saturate(${settings.saturation}%) sepia(${settings.sepia}) contrast(${settings.contrast}%)`
+    ctx.filter = `brightness(${settings.brightness}%) saturate(${settings.saturation}%) grayscale(${settings.grayscale}) contrast(${settings.contrast}%)`
     ctx.translate(canvas.width / 2, canvas.height / 2)
     ctx.rotate(settings.rotate * Math.PI / 180)
     ctx.scale(settings.vertical, settings.horizontal)
@@ -48,6 +48,7 @@ function Home() {
   }
   const imageHandle = (e) => {
     if (e.target.files.length !== 0) {
+      resetFilter()
       const reader = new FileReader()
       reader.onload = () => {
         setImage(reader.result)
@@ -62,8 +63,8 @@ function Home() {
       setSettings({ ...settings, contrast: e.target.value })
     } else if (e.target.id === "saturation") {
       setSettings({ ...settings, saturation: e.target.value })
-    } else if(e.target.id === "sepia") {
-      setSettings({ ...settings, sepia: e.target.value })
+    } else if(e.target.id === "grayscale") {
+      setSettings({ ...settings, grayscale: e.target.value })
     } else {
       setSettings({ ...settings, vibrance: e.target.value })
     }
@@ -96,7 +97,7 @@ function Home() {
       brightness: "100",
       contrast: "100",
       saturation: "100",
-      sepia: "0",
+      grayscale: "0",
     })
   }
 
@@ -141,7 +142,7 @@ function Home() {
             <img
               onLoad={(e) => setDetails(e.currentTarget)}
               style={{
-                filter: `brightness(${settings.brightness}%) saturate(${settings.saturation}%) contrast(${settings.contrast}% sepia(${settings.sepia})`,
+                filter: `brightness(${settings.brightness}%) saturate(${settings.saturation}%) contrast(${settings.contrast}%) grayscale(${settings.grayscale}%)`,
                 transform: `rotate(${settings.rotate}deg) scale(${settings.vertical},${settings.horizontal})`,
               }}
               src={image}
@@ -245,19 +246,19 @@ function Home() {
                 htmlFor="default-range"
                 className="text-textColor block text-start mb-2 ml-1.5 text-sm font-medium"
               >
-                Sepia
+                grayscale
                 <div className="bg-white font-bold inline ml-4">
-                  {settings.sepia}%
+                  {settings.grayscale}%
                 </div>
               </label>
             </div>
             <input
-              id="sepia"
+              id="grayscale"
               type="range"
               min="0"
               max="200"
               onChange={changeFilter}
-              value={settings.vibrance}
+              value={settings.grayscale}
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
             ></input>
           </div>
