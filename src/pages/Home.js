@@ -140,28 +140,24 @@ function Home() {
       ...settings,
       rotate: settings.rotate - 90,
     })
-    console.log(settings)
   }
   const rightRotate = () => {
     setSettings({
       ...settings,
       rotate: settings.rotate + 90,
     })
-    console.log(settings)
   }
   const verticalFlip = () => {
     setSettings({
       ...settings,
       vertical: settings.vertical === 1 ? -1 : 1,
     })
-    console.log(settings)
   }
   const horizontalFlip = () => {
     setSettings({
       ...settings,
       horizontal: settings.horizontal === 1 ? -1 : 1,
     })
-    console.log(settings)
   }
 
   return (
@@ -204,8 +200,7 @@ function Home() {
               id="file_input_help"
             >
               *SVG, PNG, JPG or GIF
-              <br></br>
-              *Hover on the image to crop
+              {image ? <div>Hover on the image to crop</div> :""}
             </p>
           </div>
           {/* Filters */}
