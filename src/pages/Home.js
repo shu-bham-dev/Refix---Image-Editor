@@ -203,7 +203,9 @@ function Home() {
               className="mb-2 text-sm text-textColor text-start"
               id="file_input_help"
             >
-              *SVG, PNG, JPG or GIF.
+              *SVG, PNG, JPG or GIF
+              <br></br>
+              *Hover on the image to crop
             </p>
           </div>
           {/* Filters */}
@@ -325,12 +327,6 @@ function Home() {
               )}
               <button
                 className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded"
-                onClick={saveImage}
-              >
-                Download Image
-              </button>
-              <button
-                className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded"
                 onClick={leftRotate}
               >
                 Rotate Left
@@ -353,7 +349,15 @@ function Home() {
               >
                 verticalFlip
               </button>
-            </div>{" "}
+            </div>
+            <div className="flex flex-row justify-around mb-2 mt-4 rounded-md p-4">
+              <button
+                className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded"
+                onClick={saveImage}
+              >
+                Download Image
+              </button>
+            </div>
           </div>
         </div>
       </div>
