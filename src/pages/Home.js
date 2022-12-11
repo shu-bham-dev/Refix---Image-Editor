@@ -29,7 +29,7 @@ function Home() {
 
     ctx.filter = `brightness(${settings.brightness}%) saturate(${settings.saturation}%) grayscale(${settings.grayscale}) contrast(${settings.contrast}%)`
     ctx.translate(canvas.width / 2, canvas.height / 2)
-    ctx.rotate(settings.rotate * Math.PI / 180)
+    ctx.rotate((settings.rotate * Math.PI) / 180)
     ctx.scale(settings.vertical, settings.horizontal)
 
     ctx.drawImage(
@@ -63,10 +63,8 @@ function Home() {
       setSettings({ ...settings, contrast: e.target.value })
     } else if (e.target.id === "saturation") {
       setSettings({ ...settings, saturation: e.target.value })
-    } else if(e.target.id === "grayscale") {
-      setSettings({ ...settings, grayscale: e.target.value })
     } else {
-      setSettings({ ...settings, vibrance: e.target.value })
+      setSettings({ ...settings, grayscale: e.target.value })
     }
   }
   const imageCrop = () => {
@@ -98,38 +96,39 @@ function Home() {
       contrast: "100",
       saturation: "100",
       grayscale: "0",
+      rotate: 0,
+      vertical: 1,
+      horizontal: 1,
     })
   }
-
+  // Image Modification
   const leftRotate = () => {
-    console.log(settings);
     setSettings({
       ...settings,
       rotate: settings.rotate - 90,
     })
+    console.log(settings)
   }
-
   const rightRotate = () => {
-    console.log(settings);
     setSettings({
       ...settings,
       rotate: settings.rotate + 90,
     })
+    console.log(settings)
   }
   const verticalFlip = () => {
-    console.log(settings);
     setSettings({
       ...settings,
       vertical: settings.vertical === 1 ? -1 : 1,
     })
+    console.log(settings)
   }
-
   const horizontalFlip = () => {
-    console.log(settings);
     setSettings({
       ...settings,
       horizontal: settings.horizontal === 1 ? -1 : 1,
     })
+    console.log(settings)
   }
 
   return (
@@ -141,15 +140,16 @@ function Home() {
           <ReactCrop crop={crop} onChange={(c) => setCrop(c)}>
             <img
               onLoad={(e) => setDetails(e.currentTarget)}
+              src={image}
               style={{
                 filter: `brightness(${settings.brightness}%) saturate(${settings.saturation}%) contrast(${settings.contrast}%) grayscale(${settings.grayscale}%)`,
                 transform: `rotate(${settings.rotate}deg) scale(${settings.vertical},${settings.horizontal})`,
               }}
-              src={image}
               alt="Please select an IMG"
             />
           </ReactCrop>
         </div>
+        {/* Right Sidebar */}
         <div className="shadow-shadowBG rounded w-5/12">
           <div className="p-8">
             {/* Image Selector */}
@@ -165,156 +165,161 @@ function Home() {
               type="file"
               onChange={imageHandle}
             ></input>
-            <p className="mb-2 text-sm text-textColor text-start" id="file_input_help">
+            <p
+              className="mb-2 text-sm text-textColor text-start"
+              id="file_input_help"
+            >
               *SVG, PNG, JPG or GIF.
             </p>
           </div>
           {/* Filters */}
-          <div className="rounded-md p-8">
-            <div className="flex">
-              <BsFillBrightnessHighFill color="white" size="20px" />
-              <label
-                htmlFor="default-range"
-                className="text-textColor block text-start mb-2 ml-1.5 text-sm font-medium"
-              >
-                Brightness
-                <div className="bg-white font-bold inline ml-4">
-                  {settings.brightness}%
-                </div>
-                <button
-                  className="ml-64 shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded"
-                  onClick={resetFilter}
+          <div>
+            <div className="rounded-md p-8">
+              <div className="flex">
+                <BsFillBrightnessHighFill color="white" size="20px" />
+                <label
+                  htmlFor="default-range"
+                  className="text-textColor block text-start mb-2 ml-1.5 text-sm font-medium"
                 >
-                  Reset
-                </button>
-              </label>
+                  Brightness
+                  <div className="bg-white font-bold inline ml-4">
+                    {settings.brightness}%
+                  </div>
+                  <button
+                    className="ml-64 shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded"
+                    onClick={resetFilter}
+                  >
+                    Reset
+                  </button>
+                </label>
+              </div>
+              <input
+                id="brightness"
+                type="range"
+                min="0"
+                max="200"
+                value={settings.brightness}
+                onChange={changeFilter}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+              ></input>
+              <div className="flex">
+                <IoContrastSharp color="white" size="20px" />
+                <label
+                  htmlFor="default-range"
+                  className="text-textColor block text-start mb-2 ml-1.5 text-sm font-medium"
+                >
+                  Contrast
+                  <div className="bg-white font-bold inline ml-4">
+                    {settings.contrast}%
+                  </div>
+                </label>
+              </div>
+              <input
+                id="contrast"
+                type="range"
+                min="0"
+                max="200"
+                value={settings.contrast}
+                onChange={changeFilter}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+              ></input>
+              <div className="flex">
+                <BsFillRecordCircleFill color="white" size="20px" />
+                <label
+                  htmlFor="default-range"
+                  className="text-textColor block text-start mb-2 ml-1.5 text-sm font-medium"
+                >
+                  Saturation
+                  <div className="bg-white font-bold inline ml-4">
+                    {settings.saturation}%
+                  </div>
+                </label>
+              </div>
+              <input
+                id="saturation"
+                type="range"
+                min="0"
+                max="200"
+                value={settings.saturation}
+                onChange={changeFilter}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+              ></input>
+              <div className="flex">
+                <BsImageAlt color="white" size="20px" />
+                <label
+                  htmlFor="default-range"
+                  className="text-textColor block text-start mb-2 ml-1.5 text-sm font-medium"
+                >
+                  grayscale
+                  <div className="bg-white font-bold inline ml-4">
+                    {settings.grayscale}%
+                  </div>
+                </label>
+              </div>
+              <input
+                id="grayscale"
+                type="range"
+                min="0"
+                max="200"
+                onChange={changeFilter}
+                value={settings.grayscale}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+              ></input>
             </div>
-            <input
-              id="brightness"
-              type="range"
-              min="0"
-              max="200"
-              value={settings.brightness}
-              onChange={changeFilter}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
-            ></input>
-            <div className="flex">
-              <IoContrastSharp color="white" size="20px" />
-              <label
-                htmlFor="default-range"
-                className="text-textColor block text-start mb-2 ml-1.5 text-sm font-medium"
-              >
-                Contrast
-                <div className="bg-white font-bold inline ml-4">
-                  {settings.contrast}%
-                </div>
-              </label>
-            </div>
-            <input
-              id="contrast"
-              type="range"
-              min="0"
-              max="200"
-              value={settings.contrast}
-              onChange={changeFilter}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
-            ></input>
-            <div className="flex">
-              <BsFillRecordCircleFill color="white" size="20px" />
-              <label
-                htmlFor="default-range"
-                className="text-textColor block text-start mb-2 ml-1.5 text-sm font-medium"
-              >
-                Saturation
-                <div className="bg-white font-bold inline ml-4">
-                  {settings.saturation}%
-                </div>
-              </label>
-            </div>
-            <input
-              id="saturation"
-              type="range"
-              min="0"
-              max="200"
-              value={settings.saturation}
-              onChange={changeFilter}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
-            ></input>
-            <div className="flex">
-              <BsImageAlt color="white" size="20px" />
-              <label
-                htmlFor="default-range"
-                className="text-textColor block text-start mb-2 ml-1.5 text-sm font-medium"
-              >
-                grayscale
-                <div className="bg-white font-bold inline ml-4">
-                  {settings.grayscale}%
-                </div>
-              </label>
-            </div>
-            <input
-              id="grayscale"
-              type="range"
-              min="0"
-              max="200"
-              onChange={changeFilter}
-              value={settings.grayscale}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
-            ></input>
-          </div>
-          <div className="flex flex-row justify-around mb-2 mt-4 rounded-md p-4">
-            <div className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded">
-              Vintage
-            </div>
-            <button className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded">
-              Lomo
-            </button>
-            <button className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded">
-              Clarity
-            </button>
-            <button className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded">
-              Sin City
-            </button>
-          </div>
-          <div className="flex flex-row justify-around mb-2 mt-4 rounded-md p-4">
-            {crop && (
-              <button
-                className="crop shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded"
-                onClick={imageCrop}
-              >
-                Crop Image
+            <div className="flex flex-row justify-around mb-2 mt-4 rounded-md p-4">
+              <div className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded">
+                Vintage
+              </div>
+              <button className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded">
+                Lomo
               </button>
-            )}
-            <button
-              className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded"
-              onClick={saveImage}
-            >
-              Download Image
-            </button>
-            <button
-              className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded"
-              onClick={leftRotate}
-            >
-              Rotate Left
-            </button>
-            <button
-              className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded"
-              onClick={rightRotate}
-            >
-              Rotate Right
-            </button>
-            <button
-              className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded"
-              onClick={horizontalFlip}
-            >
-              horizontalFlip
-            </button>
-            <button
-              className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded"
-              onClick={verticalFlip}
-            >
-              verticalFlip
-            </button>
+              <button className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded">
+                Clarity
+              </button>
+              <button className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded">
+                Sin City
+              </button>
+            </div>
+            <div className="flex flex-row justify-around mb-2 mt-4 rounded-md p-4">
+              {crop && (
+                <button
+                  className="crop shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded"
+                  onClick={imageCrop}
+                >
+                  Crop Image
+                </button>
+              )}
+              <button
+                className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded"
+                onClick={saveImage}
+              >
+                Download Image
+              </button>
+              <button
+                className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded"
+                onClick={leftRotate}
+              >
+                Rotate Left
+              </button>
+              <button
+                className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded"
+                onClick={rightRotate}
+              >
+                Rotate Right
+              </button>
+              <button
+                className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded"
+                onClick={horizontalFlip}
+              >
+                horizontalFlip
+              </button>
+              <button
+                className="shadow-shadowBG2 text-textColor font-semibold py-1 px-1 rounded"
+                onClick={verticalFlip}
+              >
+                verticalFlip
+              </button>
+            </div>{" "}
           </div>
         </div>
       </div>
