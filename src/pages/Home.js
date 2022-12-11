@@ -1,5 +1,7 @@
 import React, { useState } from "react"
 import ReactCrop from "react-image-crop"
+import { ToastContainer, toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 import "react-image-crop/dist/ReactCrop.css"
 // Icons
 import { BsFillBrightnessHighFill } from "react-icons/bs"
@@ -43,7 +45,16 @@ function Home() {
     const link = document.createElement("a")
     link.download = "image_edit.jpg"
     link.href = canvas.toDataURL()
-    console.log(link.href)
+    toast.success(`image is downloading`, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    })
     link.click()
   }
   const imageHandle = (e) => {
@@ -51,7 +62,29 @@ function Home() {
       resetFilter()
       const reader = new FileReader()
       reader.onload = () => {
-        setImage(reader.result)
+        const name = e.target.files[0].name
+        const lastDot = name.lastIndexOf(".")
+        const ext = name.substring(lastDot + 1)
+        if (
+          ext === "png" ||
+          ext === "jpg" ||
+          ext === "jpeg" ||
+          ext === "gif" ||
+          ext === "svg"
+        ) {
+          setImage(reader.result)
+        } else {
+          toast.error(`${ext} file format not allowed`, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          })
+        }
       }
       reader.readAsDataURL(e.target.files[0])
     }
@@ -133,10 +166,11 @@ function Home() {
 
   return (
     <div>
+      <ToastContainer />
       {/* <div className="inline mt-40">Refix.io</div> */}
       <div className="flex items-center justify-evenly h-screen bg-bgColor">
-        <div id="myCanvas" className="border border-black h-96 w-96">
-          {/* <canvas ref={canvasRef} /> */}
+        {/* Left Sidebar */}
+        <div id="myCanvas" className="shadow-shadowBG rounded h-96 w-96">
           <ReactCrop crop={crop} onChange={(c) => setCrop(c)}>
             <img
               onLoad={(e) => setDetails(e.currentTarget)}
