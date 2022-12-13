@@ -163,7 +163,7 @@ function Home() {
   return (
     <div>
       <ToastContainer />
-      {/* <div className="inline mt-40">Refix.io</div> */}
+      <div className="inline mt-20 text-textColor font-bold absolute">Refix.com - Image Editor</div>
       <div className="flex items-center justify-evenly h-screen bg-bgColor">
         {/* Left Sidebar */}
         <div id="myCanvas" className="shadow-shadowBG rounded h-96 w-96">
